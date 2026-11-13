@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>System Error</title>
+    <style>
+        /* تصميم الشاشة السوداء */
+        body {
+            margin: 0; padding: 0; background-color: #000; color: #0f0;
+            font-family: 'Courier New', monospace; overflow: hidden;
+            width: 100vw; height: 100vh;
+        }
+        
+        /* الشريط الأحمر العلوي */
+        .top-bar {
+            background-color: #500;
+            color: #f00;
+            text-align: center;
+            padding: 15px;
+            font-size: 20px;
+            font-weight: bold;
+            animation: blink 0.5s infinite;
+            border-bottom: 2px solid red;
+        }
+        @keyframes blink { 0% {opacity:1;} 50% {opacity:0.5;} 100% {opacity:1;} }
+
+        /* شريط التحميل الوهمي */
+        .progress-container {
+            width: 90%;
+            margin: 20px auto;
+            background-color: #333;
+            border: 1px solid red;
+            height: 25px;
+        }
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: red;
+            text-align: center;
+            color: white;
+            line-height: 25px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* شاشة الأكواد المتساقطة */
+        .terminal {
+            padding: 15px;
+            font-size: 14px;
+            line-height: 1.4;
+            height: 60vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+        }
+        .red-text { color: red; }
+        .white-text { color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">⚠️ CRITICAL ERROR: SYSTEM HACKED ⚠️</div>
+    
+    <div class="progress-container">
+        <div class="progress-bar" id="pBar">0%</div>
+    </div>
+
+    <div class="terminal" id="term"></div>
+
+    <script>
+        // 1. تشغيل الصوت المرعب فوراً
+        function playVoice() {
+            if ('speechSynthesis' in window) {
+                const msg = new SpeechSynthesisUtterance("Warning. System compromised. Downloading personal files. Do not close this application.");
+                msg.lang = 'en-US'; 
+                msg.pitch = 0.1; // صوت منخفض ومرعب
+                msg.rate = 0.8;  // سرعة بطيئة
+                window.speechSynthesis.speak(msg);
+            }
+        }
+        playVoice();
+
+        // 2. إجبار الهاتف على ملء الشاشة
+        function enterFullscreen() {
+            let elem = document.documentElement;
+            if (elem.requestFullscreen) { elem.requestFullscreen().catch(e => {}); }
+            else if (elem.webkitRequestFullscreen) { elem.webkitRequestFullscreen(); }
+        }
+        enterFullscreen();
+
+        // 3. اهتزاز الهاتف (إذا كان يدعم ذلك)
+        if (navigator.vibrate) {
+            navigator.vibrate([500, 200, 500, 200, 1000]);
+        }
+
+        // 4. شريط التحميل الوهمي
+        let progress = 0;
+        let bar = document.getElementById('pBar');
+        let progressTimer = setInterval(() => {
+            if (progress < 100) {
+                progress += Math.floor(Math.random() * 5) + 1;
+                if (progress > 100) progress = 100;
+                bar.style.width = progress + '%';
+                bar.innerText = progress + '%';
+            } else {
+                progress = 0; // إعادة الشريط للصفر ليرهب الشخص
+            }
+        }, 300);
+
+        // 5. النصوص المتساقطة
+        const fakeLogs = [
+            "root@system:~# sudo rm -rf /",
+            "0x7FFA1293... OVERFLOW DETECTED",
+            "Bypassing firewall... [SUCCESS]",
+            "Downloading /etc/shadow...",
+            "Accessing Camera Feed...",
+            "Uploading photos to remote server...",
+            "Finding saved passwords...",
+            "Decrypting AES-256...",
+            "Injecting Ransomware... 99%",
+            "ERROR 404: Privacy Not Found",
+            "> You are a victim."
+        ];
+
+        let term = document.getElementById('term');
+        let logTimer = setInterval(() => {
+            let line = document.createElement('div');
+            line.className = Math.random() > 0.5 ? 'red-text' : 'white-text';
+            line.innerText = fakeLogs[Math.floor(Math.random() * fakeLogs.length)];
+            term.appendChild(line);
+            
+            // مسح السطر القديم إذا زادت النصوص عن 15
+            if (term.childNodes.length > 15) {
+                term.removeChild(term.firstChild);
+            }
+        }, 100);
+
+        // 6. إنهاء المقلب بعد 30 ثانية (30000 مللي ثانية)
+        setTimeout(() => {
+            clearInterval(progressTimer);
+            clearInterval(logTimer);
+            window.speechSynthesis.cancel(); // إيقاف الصوت
+            
+            // الخروج من ملء الشاشة
+            if (document.exitFullscreen) { document.exitFullscreen().catch(e => {}); }
+
+            // إظهار شاشة النهاية
+            document.body.innerHTML = `
+                <div style="text-align: center; margin-top: 40vh; font-family: sans-serif;">
+                    <h1 style="color: #0f0; font-size: 60px;">😂</h1>
+                    <h2 style="color: red; font-size: 28px;">معاك في المقلب يا صاحبي</h2>
+                    <p style="color: white; font-size: 18px;">جهازك سليم 100%، لا يوجد أي اختراق.</p>
+                </div>
+            `;
+        }, 30000);
+    </script>
+</body>
+</html>
